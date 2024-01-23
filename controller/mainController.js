@@ -6,29 +6,6 @@ exports.indexPage = function (req, res) {
   response.success('REST API MuhApps', res);
 };
 
-exports.viewSensor = function (req, res) {
-  uuid_device = req.params.uuid_device;
-
-  if (uuid_device == null) {
-    res.send('ID Device Tidak ditemukan');
-  }
-
-  dbexec.query('SELECT * FROM sensor WHERE uuid_device =?', uuid_device, function (error, result) {
-    if (error) {
-      console.log(error);
-      res.send(error + ' ---Invalid Server---');
-    } else {
-      response.success(
-        {
-          Status: 'done',
-          Message: 'Data Berhasil ditemukan',
-          Data: result,
-        },
-        res
-      );
-    }
-  });
-};
 exports.insertSensor = function (req, res) {
   let dataSensor = {
     uuid_device: req.body.uuid_device,
