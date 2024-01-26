@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const config = require('../config/secret');
+const config = require('../key/secret');
 
 function verifikasi(req, res, next) {
   // Cek authorization header

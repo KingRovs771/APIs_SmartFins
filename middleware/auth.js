@@ -2,7 +2,7 @@ const md5 = require('md5');
 const mysql = require('mysql');
 const connDb = require('../server/index');
 const { response } = require('../config/response');
-const config = require('verifikasi');
+const config = require('./verifikasi');
 const jwt = require('jsonwebtoken');
 const ip = require('ip');
 

@@ -3,7 +3,7 @@ const dbexec = require('../server/index');
 const mysql = require('mysql');
 
 exports.indexPage = function (req, res) {
-  response.success('REST API MuhApps', res);
+  response.success('REST API SmartFins', res);
 };
 
 exports.insertSensor = function (req, res) {
