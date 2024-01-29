@@ -1,14 +1,14 @@
 const md5 = require('md5');
 const mysql = require('mysql');
 const connDb = require('../server/index');
-const { response } = require('../config/response');
-const config = require('./verifikasi');
+const response = require('../config/response');
+const config = require('../key/secret');
 const jwt = require('jsonwebtoken');
 const ip = require('ip');
 
 exports.registerUser = function (req, res) {
   let dataUser = {
-    uuid_user: md5(req.body.nama_user),
+    uuid_user: md5(req.body.password),
     nama_user: req.body.nama_user,
     no_hp: req.body.no_hp,
     alamat: req.body.alamat,
@@ -30,25 +30,26 @@ exports.registerUser = function (req, res) {
         let queryInsert = 'INSERT INTO ?? SET ?';
         let tableInsert = ['user'];
 
-        exeQueryInsert = mysql.format(queryInsert, tableInsert);
+        queryInsert = mysql.format(queryInsert, tableInsert);
 
-        connDb.query(exeQuery, dataUser, function (error, rows) {
+        connDb.query(queryInsert, dataUser, function (error, result) {
           if (error) {
             console.log(error);
             res.send('Invalid Server');
           } else {
-            res.json(
-              {
-                Status: 'Success',
-                Message: 'Data Berhasil Disimpan',
-                Data: rows,
+            res.json({
+              Status: 'Success',
+              Message: 'Selamat Anda Berhasil Terdaftar di SmartFins',
+              Data: {
+                nama_user: dataUser.nama_user,
+                no_hp: dataUser.no_hp,
+                email: dataUser.email,
               },
-              res
-            );
+            });
           }
         });
       } else {
-        response.success('Email Sudah Terdaftar', res);
+        res.send('Email Sudah Terdaftar');
       }
     }
   });
@@ -71,7 +72,7 @@ exports.loginUser = function (req, res) {
       res.send('Invalid Server');
     } else {
       if (rows.length == 1) {
-        let token = jwt.sign({ rows }, config.secret, {
+        let token = jwt.sign({ post }, config.secret, {
           expiresIn: '24000000',
         });
 
@@ -120,26 +121,65 @@ exports.checkRoute = function (req, res) {
   res.json({ uid_user });
 };
 
-exports.viewSensor = function (req, res) {
-  const uuid_device = req.params.uuid_device;
+exports.viewDeviceByUser = function (req, res) {
   const uuid_user = req.auth.rows[0].uuid_user;
   if (uuid_device == null) {
     res.send('ID Device Tidak ditemukan');
   }
 
-  dbexec.query('SELECT * FROM sensor WHERE uuid_device =? AND uuid_user =?', [uuid_device, uuid_user], function (error, result) {
+  dbexec.query('SELECT * FROM device_user WHERE uuid_user =?', [uuid_user], function (error, result) {
     if (error) {
       console.log(error);
       res.send(error + ' ---Invalid Server---');
     } else {
-      response.success(
-        {
-          Status: 'done',
-          Message: 'Data Berhasil ditemukan',
-          Data: result,
+      if (result.length == 1) {
+        res.json({
+          Status: 'Success',
+          Message: 'Data Device Berhasil Ditemukan',
+          Data: {
+            uuid_device: result.uuid_device,
+            nama_kolam: result.nama_kolam,
+          },
+        });
+      } else {
+        res.json({
+          Status: 'Error',
+          Message: 'Data Device Tidak Ditemukan',
+        });
+      }
+    }
+  });
+};
+
+exports.insertDevice = function (req, res) {
+  const uid_user = req.auth.rows[0].uuid_user;
+  let postData = {
+    uuid_device: md5(req.body.uuid_device),
+    uuid_user: uid_user,
+    nama_kolam: req.body.nama_kolam,
+  };
+
+  let queryInsertDevice = 'INSERT INTO ?? SET ?';
+  let tableDevice = ['device_user'];
+
+  queryInsertDevice = mysql.format(queryInsertDevice, tableDevice);
+
+  dbexec.query(queryInsertDevice, postData, function (error, resultDevice) {
+    if (error) {
+      console.log(error);
+      res.json({
+        Status: 'Error',
+        Message: 'Data Device Tidak Berhasil Disimpan Silakan Coba Lagi !',
+      });
+    } else {
+      res.json({
+        Status: 'Success',
+        Message: 'Data Device Berhasil Disimpan !',
+        Data: {
+          uuid_device: postData.uuid_device,
+          nama_kolam: postData.nama_kolam,
         },
-        res
-      );
+      });
     }
   });
 };

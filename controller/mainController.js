@@ -22,15 +22,15 @@ exports.insertSensor = function (req, res) {
   dbexec.query(queryInsertSensor, dataSensor, function (error, result) {
     if (error) {
       console.log(error);
-      res.send('Invalid Server Error');
+      res.json({
+        Status: 'Error',
+        Values: 'Data Tidak Berhasil di Simpan ke Database Silakan Coba Lagi !!',
+      });
     } else {
-      res.json(
-        {
-          message: 'Data Berhasil Disimpan',
-          data: result,
-        },
-        res
-      );
+      res.json({
+        message: 'Data Berhasil Disimpan',
+        data: result,
+      });
     }
   });
 };
