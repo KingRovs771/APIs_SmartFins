@@ -2,9 +2,9 @@ const mysql = require('mysql');
 require('dotenv').config();
 
 const connDb = mysql.createConnection({
-  host: '34.101.56.34',
+  host: '34.101.161.28',
   user: 'root',
-  password: 'SinusRyzen', // Ganti dengan password MySQL Anda
+  password: 'SolidState162', // Ganti dengan password MySQL Anda
   database: 'smartfins_api',
 });
 
