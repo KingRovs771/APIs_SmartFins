@@ -7,4 +7,5 @@ module.exports = function (app) {
   //Main Page API
   app.route('/api/smartfins').get(main.indexPage);
   app.route('/api/smartfins/insertSensor').post(main.insertSensor);
+  app.route('/api/smartfins/getSensor/:uuid_device').get(main.getSensorByDeviceId);
 };

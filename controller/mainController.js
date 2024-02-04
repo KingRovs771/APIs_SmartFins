@@ -34,3 +34,20 @@ exports.insertSensor = function (req, res) {
     }
   });
 };
+
+exports.getSensorByDeviceId = function (req, res) {
+  const uuid_device = req.params.uuid_device;
+
+  dbexec.query('SELECT * FROM sensor WHERE uuid_sensor=? ORDER BY created_at DESC LIMIT 1', [uuid_device], function (error, result) {
+    if (error) {
+      console.log(error);
+      res.send('Invalid Server');
+    } else {
+      res.json({
+        Status: 'Success',
+        Message: 'Berhasil Mendapatkan Data',
+        Data: result,
+      });
+    }
+  });
+};
