@@ -3,10 +3,10 @@ const config = require('../key/secret');
 
 function verifikasi(req, res, next) {
   // Cek authorization header
-  let tokenWithBearer = req.headers.authorization;
+  var tokenWithBearer = req.headers.authorization;
 
   if (tokenWithBearer) {
-    let token = tokenWithBearer.split(' ')[1];
+    var token = tokenWithBearer.split(' ')[1];
 
     // Verifikasi token
     jwt.verify(token, config.secret, function (err, decoded) {

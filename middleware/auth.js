@@ -10,8 +10,6 @@ exports.registerUser = function (req, res) {
   let dataUser = {
     uuid_user: md5(req.body.password),
     nama_user: req.body.nama_user,
-    no_hp: req.body.no_hp,
-    alamat: req.body.alamat,
     email: req.body.email,
     password: md5(req.body.password),
   };
@@ -72,7 +70,7 @@ exports.loginUser = function (req, res) {
       res.send('Invalid Server');
     } else {
       if (rows.length == 1) {
-        let token = jwt.sign({ post }, config.secret, {
+        let token = jwt.sign({ rows }, config.secret, {
           expiresIn: '24000000',
         });
 
@@ -100,7 +98,6 @@ exports.loginUser = function (req, res) {
               Success: true,
               Message: 'User Logged In',
               Token: token,
-
               expires: expired,
               uuid_user: data.uid_user,
             });
@@ -122,12 +119,12 @@ exports.checkRoute = function (req, res) {
 };
 
 exports.viewDeviceByUser = function (req, res) {
-  const uuid_user = req.auth.rows[0].uuid_user;
-  if (uuid_device == null) {
+  const uid_user = req.auth.rows[0].uuid_user;
+  if (uid_user == null) {
     res.send('ID Device Tidak ditemukan');
   }
 
-  dbexec.query('SELECT * FROM device_user WHERE uuid_user =?', [uuid_user], function (error, result) {
+  connDb.query('SELECT * FROM device_user WHERE uuid_user =?', [uid_user], function (error, result) {
     if (error) {
       console.log(error);
       res.send(error + ' ---Invalid Server---');
@@ -136,10 +133,7 @@ exports.viewDeviceByUser = function (req, res) {
         res.json({
           Status: 'Success',
           Message: 'Data Device Berhasil Ditemukan',
-          Data: {
-            uuid_device: result.uuid_device,
-            nama_kolam: result.nama_kolam,
-          },
+          Data: result,
         });
       } else {
         res.json({
@@ -164,7 +158,7 @@ exports.insertDevice = function (req, res) {
 
   queryInsertDevice = mysql.format(queryInsertDevice, tableDevice);
 
-  dbexec.query(queryInsertDevice, postData, function (error, resultDevice) {
+  connDb.query(queryInsertDevice, postData, function (error, resultDevice) {
     if (error) {
       console.log(error);
       res.json({
