@@ -29,7 +29,13 @@ exports.insertSensor = function (req, res) {
     } else {
       res.json({
         message: 'Data Berhasil Disimpan',
-        data: result,
+        Data: {
+          uuid_device: dataSensor.uuid_device,
+          sensor_oksigen: dataSensor.sensor_oksigen,
+          sensor_suhu: dataSensor.sensor_suhu,
+          sensor_ph: dataSensor.sensor_ph,
+          Hasil: result,
+        },
       });
     }
   });
@@ -50,4 +56,25 @@ exports.getSensorByDeviceId = function (req, res) {
       });
     }
   });
+};
+
+exports.deleteDevice = function (req, res) {
+  const uuid_device = req.params.uuid_device;
+
+  if (uuid_device) {
+    dbexec.query('DELETE FROM device_user WHERE ??=?', ['uuid_device', uuid_device], function (error, result) {
+      if (error) {
+        console.log(error);
+        res.send('Invalid Server Error');
+      } else {
+        res.json({
+          Status: 'Success',
+          Message: 'Data Berhasil Dihapus',
+          Data: {
+            uuid_device: uuid_device,
+          },
+        });
+      }
+    });
+  }
 };
